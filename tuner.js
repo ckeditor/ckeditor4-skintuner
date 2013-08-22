@@ -1,6 +1,13 @@
+/**
+ * @license Copyright (c) 2003-2013, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or http://ckeditor.com/license
+ */
 (function() {
 	CKEDITOR.replaceClass = false;
 	CKEDITOR.disableAutoInline = true;
+
+	var dialogsQueue = [];
+	var dialogsBeingProcessed = 0;
 
 	var uiColor = window.location.href.match( /uicolor=([^&]+)/ );
 	uiColor = uiColor ? decodeURIComponent( uiColor[ 1 ] ) : '';
@@ -65,6 +72,17 @@
 
 			dialog: function( target, dialogName, tabName, config ) {
 
+				if ( dialogsBeingProcessed > 0 ) {
+					awaiting -= 1;
+
+					// there can be only one dialog displayed at the time
+					dialogsQueue.push( [ target, dialogName, tabName, config ] );
+
+					return;
+				}
+
+				dialogsBeingProcessed += 1;
+
 				// Make tab name optional.
 				if ( typeof tabName == 'object' )
 					config = tabName, tabName = null;
@@ -74,7 +92,6 @@
 				config.on = {
 					instanceReady: function() {
 						editor.once( 'dialogShow', function( evt ) {
-
 							var dialog = evt.data;
 							tabName && dialog.selectPage( tabName );
 							var clone = dialog._.element.clone( true );
@@ -88,6 +105,7 @@
 							} );
 							target.append( clone );
 							dialog.hide();
+							dialogsBeingProcessed -= 1;
 							setTimeout( function() {
 								editor.destroy();
 							}, 0 );
@@ -168,17 +186,25 @@
 				config.on = {
 					instanceReady: function() {
 						editor.once( 'panelShow', function( evt ) {
-
-							value && combo.mark( value );
+							try {
+								value && combo.mark( value );
+							} catch (e) {
+								// not every combo seems to support this
+							}
 							var panel = evt.data;
-							target.append( clonePanel( panel ) )
+							target.append( clonePanel( panel ) );
 
 							panel.hide();
 							editor.destroy();
 						} );
 
 						var combo = editor.ui.get( comboName );
-						combo.open( editor, target );
+						var el = document.getElementById("cke_" + combo.id);
+
+						// where did combo.open go in ckeditor 4.*?
+						// combo.open();
+
+						CKEDITOR.tools.callFunction( parseInt(el.innerHTML.match(/onclick="([^\(]*)\(([0-9]+),/)[2], 10), el );
 					}
 				};
 
@@ -236,8 +262,16 @@
 	}
 
 	CKEDITOR.on( 'instanceDestroyed', function() {
-		if ( !--awaiting )
-			setTimeout( loadViewer, 200 );
+		setTimeout( function () {
+			awaiting -= 1;
+
+
+			if ( dialogsQueue.length > 0 ) {
+				$.dialog.apply( null, dialogsQueue.shift() );
+			} else if ( awaiting < 1 ) {
+				setTimeout( loadViewer, 200 );
+			}
+		}, 200 )
 	} );
 
 	win.on( 'load', function() {
