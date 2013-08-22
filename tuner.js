@@ -200,11 +200,19 @@
 
 						var combo = editor.ui.get( comboName );
 						var el = document.getElementById("cke_" + combo.id);
+						var elInnerHtml = el.innerHTML;
+						var regexpOnclick;
 
 						// where did combo.open go in ckeditor 4.*?
 						// combo.open();
 
-						CKEDITOR.tools.callFunction( parseInt(el.innerHTML.match(/onclick="([^\(]*)\(([0-9]+),/)[2], 10), el );
+						if ( CKEDITOR.env.ie ) {
+							regexpOnclick = (/onmouseup="([^\(]*)\(([0-9]+),/);
+						} else {
+							regexpOnclick = (/onclick="([^\(]*)\(([0-9]+),/);
+						}
+
+						CKEDITOR.tools.callFunction( parseInt(el.innerHTML.match(regexpOnclick)[2], 10), el );
 					}
 				};
 
