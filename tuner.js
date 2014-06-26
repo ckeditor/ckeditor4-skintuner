@@ -134,7 +134,7 @@
 					instanceReady: function() {
 						editor.once( 'panelShow', function( evt ) {
 							var panel = evt.data;
-							target.append( clonePanel( panel ) )
+							target.append( clonePanel( panel ) );
 
 							panel.hide();
 							editor.destroy();
@@ -273,7 +273,6 @@
 		setTimeout( function () {
 			awaiting -= 1;
 
-
 			if ( dialogsQueue.length > 0 ) {
 				$.dialog.apply( null, dialogsQueue.shift() );
 			} else if ( awaiting < 1 ) {
@@ -325,7 +324,7 @@
 				if ( target.is( 'a' ) )
 				{
 					var color = target.getStyle( 'background-color' );
-					color = CKEDITOR.tools.convertRgbToHex( color )
+					color = CKEDITOR.tools.convertRgbToHex( color );
 					picker.setValue( color );
 					checkRefresh();
 				}
@@ -382,6 +381,8 @@
 		viewer && viewer.remove();
 		viewer = CKEDITOR.dom.element.createFromHtml( '<div id="viewer"><iframe src="javascript:void(0)" frameborder="0"></iframe></div>' );
 		doc.getBody().append( viewer );
+
+		viewer.getFirst().$.contentWindow.CKEDITOR = CKEDITOR;
 		viewer = viewer.getFirst().getFrameDocument();
 		viewer.write( html );
 
