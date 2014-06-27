@@ -118,7 +118,6 @@
 			},
 
 			menu: function( target, items, config ) {
-
 				if ( checkBusy( arguments ) )
 					return;
 
@@ -295,8 +294,7 @@
 
 		if ( loader ) {
 			loader.remove();
-		}
-		else {
+		} else {
 			body.append( CKEDITOR.dom.element.createFromHtml(
 				'<div id="mask">' +
 				'<div id="loading">' + ( msg || 'Building skin parts...' ) + '</div>' +
@@ -432,7 +430,7 @@
 				return css ? '<style>' + css + '</style>' : '';
 			} );
 		// Trimmed scripts.
-		return stripScripts( html );
+		return '<!doctype html>' + stripScripts( html );
 	}
 
 	function stripScripts( html ) {
