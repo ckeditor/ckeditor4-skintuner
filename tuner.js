@@ -380,9 +380,10 @@
 		viewer = CKEDITOR.dom.element.createFromHtml( '<div id="viewer"><iframe src="javascript:void(0)" frameborder="0"></iframe></div>' );
 		doc.getBody().append( viewer );
 
-		viewer.getFirst().$.contentWindow.CKEDITOR = CKEDITOR;
 		viewer = viewer.getFirst().getFrameDocument();
 		viewer.write( html );
+
+		doc.getById('viewer').getFirst().$.contentWindow.CKEDITOR = CKEDITOR;
 
 		viewer.getDocumentElement().setStyle( 'overflow-y', 'auto' );
 		viewer.getBody().setStyle( 'overflow-y', 'auto' );
