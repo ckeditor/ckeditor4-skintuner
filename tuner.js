@@ -383,7 +383,13 @@
 		viewer = viewer.getFirst().getFrameDocument();
 		viewer.write( html );
 
-		doc.getById('viewer').getFirst().$.contentWindow.CKEDITOR = CKEDITOR;
+		// #1 Sometimes inline area container has display style set to none, to keep element visible it's removed.
+		var inline = viewer.find( '.cke_float' );
+		for ( var i = 0; i < inline.count(); i++ ) {
+			inline.getItem( i ).removeStyle( 'display' );
+		}
+
+		doc.getById( 'viewer' ).getFirst().$.contentWindow.CKEDITOR = CKEDITOR;
 
 		viewer.getDocumentElement().setStyle( 'overflow-y', 'auto' );
 		viewer.getBody().setStyle( 'overflow-y', 'auto' );
